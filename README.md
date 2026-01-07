@@ -1,8 +1,7 @@
 
 # 🚀 Azure Functions used by WPSecure Personalization Packages
 
-**WPSecure Personalization Packages**  
-_(also known as **Windows Branding Packages**)_
+**WPSecure Personalization Packages**  _(also known as **Windows Branding Packages**)_
 
 WPSecure helps organizations centrally deploy and manage **branding and personalization** across Windows devices.
 
