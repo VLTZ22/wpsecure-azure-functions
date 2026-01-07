@@ -44,62 +44,90 @@ This ensures **privacy, performance, and reliability**.
 ## ☁️ When Is Azure Connectivity Required?
 
 If an organization operates **exclusively on Microsoft Entra ID**  
-(**no on‑premises Active Directory servers**), a small set of actions requires access to the Azure tenant.
+(**no on‑premises Active Directory servers**), A small set of actions requires access to the Azure tenant.
 
 ---
 
-## 🔑 Scenarios Requiring Azure Access
 
-### 👤 1. User Attribute Retrieval
-Used to dynamically generate **Outlook email signatures** by retrieving properties such as:
+# 🔐 WPSecure Architecture Overview
 
-- First name  
-- Surname  
-- Email address  
-- Mobile number  
+WPSecure leverages **Azure API Management (APIM)** and **Azure Functions** to deliver a secure, scalable, and automated platform for managing Outlook web signatures, retrieving user attributes non-interactively for all Outlook signatures, and collecting system and user telemetry when they login to their device.
+
+The solution is designed to operate **non-interactively**, to securely access Microsoft Graph, Exchange Online, and SharePoint Online without disrupting the end-user experience.
 
 ---
 
-### 📡 2. Beacon Engine Trigger
-Triggers the **beacon engine** to collect and store user logon metadata in **SharePoint Online**, including:
+## 🧩 Core Components
 
-- 🖥️ Device boot time  
-- 🔑 User login time  
-- 📊 Related sign‑in metadata  
+### 🔹 Azure API Management (APIM)
 
-This enables **reporting, auditing, and usage insights**.
+APIM serves as the centralized and secure gateway for all WPSecure service interactions. It provides:
 
----
+- mTLS Certificate-based authentication with complete certificate chain verification.
+- Request validation and throttling  
+- Centralized logging, monitoring, and auditability  
+- Controlled exposure of backend Azure Functions
+- IP filtering  
 
-### ✉️ 3. Exchange Online Signature Upload
-Uploads and maintains the user’s **web-based email signature** in **Exchange Online**, ensuring consistency across:
-
-- ✅ Outlook (New)  
-- 🌐 Outlook on the Web (OWA)
+All external and internal calls to WPSecure services are routed through APIM, ensuring consistent security and governance.
 
 ---
 
-## ⚙️ Azure Services Used
+### 🔹 Azure Functions
 
-To support the scenarios above, WPSecure securely leverages:
-
-🧩 **Azure API Management**  
-⚡ **Azure Functions**
-
-These services:
-
-- Act as a secure integration layer  
-- Run on scheduled or event‑driven triggers  
-- Minimize cloud interaction to *only* what is required  
+Azure Functions host the backend logic that interacts with Exchange Online, Entra ID, and SharePoint. These functions operate behind APIM and are invoked securely as needed.
 
 ---
 
-## 🛡️ Security & Design Philosophy
+## ✉️ Outlook Signature Management
 
-✅ **Minimal cloud dependency**  
-✅ **No persistent external services**  
-✅ **Native Microsoft 365 integration**  
-✅ **Enterprise‑grade security posture**
+WPSecure uses Azure Functions to silently retrieve user attributes from **Microsoft Entra ID** via **Microsoft Graph**, including:
+
+- Display name  
+- Job title  
+- Department  
+- Phone numbers and contact details
+- and other attributes
+
+These attributes are used to generate and update email signatures dynamically for the following Outlook clients.
+
+- **Outlook on the web**
+- **Outlook Classic**
+- **Outlook New**
+
+This ensures consistent, centrally managed signatures across all Outlook clients and user devices.
+
+---
+
+## 👤 Non-Interactive Outlook web signature uploads to Exchange Online
+
+Whenever the Outlook signature changes or every 8 hours, WPSecure sends a copy of the user's web signature to Exchange Online via the Azure Function.
+
+---
+
+## 💻 System and Device Telemetry Collection
+
+Azure Functions also collect key operational and endpoint signals, such as:
+
+- User login activity  
+- System boot time  
+- Device and session-related metadata  
+
+This information is written to **SharePoint**, providing a centralized location for:
+
+- Reporting and analytics  
+- Auditing and compliance  
+- Operational monitoring and insights  
+
+---
+
+## ✅ Summary
+
+By combining **Azure API Management** and **Azure Functions**, WPSecure delivers an automated, secure, and centrally governed solution for:
+
+- Outlook Web, New and Classic signature management  
+- Non-interactive retrieval of user identity attributes  
+- System and device telemetry collection into SharePoint  
 
 ---
 
