@@ -1,0 +1,128 @@
+<policies>
+    <!--
+        Mutual TLS + Certificate UPN == Body UPN validation
+        Important prerequisites:
+        1. negotiateClientCertificate = true on the custom domain/host binding
+           (without this → context.Request.Certificate will be null in most cases)
+        2. Proper trusted root/intermediate CA certificates uploaded to APIM
+        3. Backend expects the special header (if it's used for auth)
+    -->
+    <inbound>
+        <base />
+
+        <!-- 
+            Example: adding special header for Azure Functions / custom backend auth
+            Adjust name & value according to your real scenario
+        -->
+        <set-header name="X-Functions-Key" exists-action="override">
+            <value>eMb74M-Hnxe_xIiRoSchB_K80V5ngwhgHtIyk1kx8pEcAzFXjkFD2H==</value>
+        </set-header>
+
+        <!-- 1. Enforce client certificate is present -->
+        <choose>
+            <when condition="@(context.Request.Certificate == null)">
+                <return-response>
+                    <set-status code="401" reason="Client certificate required" />
+                    <set-header name="WWW-Authenticate" exists-action="override">
+                        <value>MutualTLS</value>
+                    </set-header>
+                    <set-body>Client authentication certificate is required.</set-body>
+                </return-response>
+            </when>
+        </choose>
+
+        <!-- 2. Validate certificate properties -->
+        <validate-client-certificate 
+            validate-trust="true"
+            validate-revocation="true"
+            validate-not-before="true"
+            validate-not-after="true"
+            ignore-error="false" />
+
+        <!-- 
+            3. Extract UPN from certificate 
+               - First tries UPN (otherName)
+               - Falls back to email SAN (rfc822Name)
+        -->
+        <set-variable name="certUpn" value="@{
+            var cert = context.Request.Certificate;
+            if (cert == null) return string.Empty;
+
+            // Try UPN from otherName SAN
+            var upn = cert.GetNameInfo(X509NameType.UpnName, false);
+
+            // Fallback to email SAN
+            if (string.IsNullOrWhiteSpace(upn))
+            {
+                upn = cert.GetNameInfo(X509NameType.EmailName, false);
+            }
+
+            return upn?.Trim() ?? string.Empty;
+        }" />
+
+        <!-- 
+            4. Extract UPN from request body (JSON) 
+            Important: preserveContent=true → body stays available for backend
+        -->
+        <set-variable name="bodyUpn" value="@{
+            var contentType = context.Request.Headers.GetValueOrDefault("Content-Type", "").ToLowerInvariant();
+
+            if (!contentType.Contains("json"))
+                return string.Empty;
+
+            try
+            {
+                var body = context.Request.Body.As<JObject>(preserveContent: true);
+                return body?.SelectToken("$.upn")?.ToString()?.Trim() ?? string.Empty;
+            }
+            catch
+            {
+                return string.Empty;
+            }
+        }" />
+
+        <!-- 
+            5. Enforce UPN match (case-insensitive) 
+            Both values must be present and equal
+        -->
+        <choose>
+            <when condition="@{
+                var cert = context.Variables.GetValueOrDefault<string>("certUpn", "");
+                var body = context.Variables.GetValueOrDefault<string>("bodyUpn", "");
+
+                return string.IsNullOrWhiteSpace(cert) 
+                    || string.IsNullOrWhiteSpace(body)
+                    || !string.Equals(cert, body, StringComparison.OrdinalIgnoreCase);
+            }">
+                <return-response>
+                    <set-status code="403" reason="Identity mismatch" />
+                    <set-body>The UPN in the client certificate does not match the UPN in the request body.</set-body>
+                </return-response>
+            </when>
+        </choose>
+
+        <!-- Optional: pass certificate information to backend for auditing/logging -->
+        <!--
+        <set-header name="X-Client-Cert-UPN" exists-action="override">
+            <value>@(context.Variables["certUpn"])</value>
+        </set-header>
+        -->
+    </inbound>
+
+    <backend>
+        <base />
+    </backend>
+
+    <outbound>
+        <base />
+    </outbound>
+
+    <on-error>
+        <base />
+        <!-- Catch certificate validation failures + other inbound errors -->
+        <return-response>
+            <set-status code="401" reason="Invalid client certificate" />
+            <set-body>Client certificate validation failed (trust, revocation, validity, etc.).</set-body>
+        </return-response>
+    </on-error>
+</policies>
